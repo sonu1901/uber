@@ -9,7 +9,7 @@ function CaptainSignup() {
         password:'',
         driving_licence:'',
         vehicleType:'',
-        vehicleBrand:'',
+        vehicleNumber:'',
         vehicleRc:'',
         vehicleValidity:'',
     })
@@ -54,7 +54,7 @@ function CaptainSignup() {
 
             <div className="flex flex-row justify-between items-center gap-2 mt-2">
               <div>
-                  <input type="text" placeholder="Vehicle Brand" value={formData.vehicleBrand} onChange={(e)=>setFormData({...formData,vehicleBrand:e.target.value})} className="px-3 py-4 border rounded-xl bg-gray-300 w-full" />
+                  <input type="text" placeholder="Vehicle Number" value={formData.vehicleNumber} onChange={(e)=>setFormData({...formData,vehicleNumber:e.target.value})} className="px-3 py-4 border rounded-xl bg-gray-300 w-full" />
               </div>
               <div>
                   <input type="text" placeholder="Vehicle RC" value={formData.vehicleRc} onChange={(e)=>setFormData({...formData,vehicleRc:e.target.value})} className="px-3 py-4 border rounded-xl bg-gray-300 w-full" />
