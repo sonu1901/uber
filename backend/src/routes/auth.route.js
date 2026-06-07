@@ -7,8 +7,8 @@ import { loginSchema } from "../validations/login.validation.js";
 
 const routes = Router();
 
-routes.post('/user',validate(registerUserSchema),userRegister);
-routes.post('/captain',validate(captainRegisterSchema),captainRegister);
+routes.post('/user-register',validate(registerUserSchema),userRegister);
+routes.post('/captain-register',validate(captainRegisterSchema),captainRegister);
 routes.post('/login',validate(loginSchema),login);
 
 export default routes;

@@ -16,11 +16,7 @@ export const registerUserSchema = z.object({
 
     password: z
       .string()
-      .min(8, "Password must be at least 8 characters")
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-        "Password must contain uppercase, lowercase and number"
-      ),
+      .min(8, "Password must be at least 8 characters"),
 
     role: z
       .enum(["user", "captain"])

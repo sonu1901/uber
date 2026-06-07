@@ -1,24 +1,58 @@
+import axios from "axios";
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom"
+import { backendUrl } from "../main";
+import { useAuth } from "../context/UseAuth";
 
 function CaptainSignup() {
+    const {setAuth} = useAuth();
     const [formData,setFormData] = useState({
         firstName:'',
         lastName:'',
         email:'',
         password:'',
-        driving_licence:'',
+        driving_license:'',
         vehicleType:'',
         vehicleNumber:'',
         vehicleRc:'',
         vehicleValidity:'',
-    })
+    });
+    const navigate = useNavigate();
+
+    const handleSubmit = async(e)=>{
+      e.preventDefault();
+      if(!formData.firstName || !formData.lastName || !formData.email || !formData.password || !formData.driving_license || !formData.vehicleType || !formData.vehicleNumber || !formData.vehicleRc || !formData.vehicleValidity){
+        toast.error('All fields are required.');
+        return;
+      }
+
+      try {
+        const {data} = await axios.post(`${backendUrl}api/auth/captain-register`,{name:`${formData.firstName} ${formData.lastName}`,email:formData.email,password:formData.password,driving_license:formData.driving_license,vehicleType:formData.vehicleType,vehicleNumber:formData.vehicleNumber,vehicleRc:formData.vehicleRc,vehicleValidity:formData.vehicleValidity});
+        console.log('data ',data);
+        if(data.success){
+          toast.success(data.message);
+          setAuth(data.user);
+          localStorage.setItem('uber_auth',JSON.stringify(data.user));
+          localStorage.setItem('accessToken',data.accessToken);
+          localStorage.setItem('refreshToken',data.refreshToken);
+          navigate('/captain-home');
+        }else{
+          toast.error(data.message);
+        }
+      } catch (error) {
+        console.log('Error : ',error.response.data);
+        toast.error(error.response.data.message);
+      }
+    }
+
+
   return (
     <div className="p-10 flex flex-col justify-between shadow-md rounded-xl">
       <img className='w-16 mb-5' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYQy-OIkA6In0fTvVwZADPmFFibjmszu2A0g&s" alt="" />
       <div className="mt-5">
         <h2 className="text-2xl font-bold text-center text-amber-300 pb-5">Captain Signup</h2>
-        <form>
+        <form onSubmit={(e)=>handleSubmit(e)}>
             <div className="flex flex-row justify-between items-center gap-2">
               <div>
                 <h3 className="font-medium text-lg">First Name</h3>
@@ -32,9 +66,9 @@ function CaptainSignup() {
             <h3 className="font-medium text-lg">Email Id</h3>
             <input type="text" value={formData.email} onChange={(e)=>setFormData({...formData,email:e.target.value})} className="px-3 py-4 border rounded-xl bg-gray-300 w-full" />
             <h3 className="font-medium text-lg">Password</h3>
-            <input type="text" value={formData.password} onChange={(e)=>setFormData({...formData,password:e.target.value})} className="px-3 py-4 border rounded-xl bg-gray-300 w-full"/>
+            <input type="password" value={formData.password} onChange={(e)=>setFormData({...formData,password:e.target.value})} className="px-3 py-4 border rounded-xl bg-gray-300 w-full"/>
             <h3 className="font-medium text-lg">Driving Licence</h3>
-            <input type="text" value={formData.driving_licence} onChange={(e)=>setFormData({...formData,driving_licence:e.target.value})} className="px-3 py-4 border rounded-xl bg-gray-300 w-full"/>
+            <input type="text" value={formData.driving_license} onChange={(e)=>setFormData({...formData,driving_license:e.target.value})} className="px-3 py-4 border rounded-xl bg-gray-300 w-full"/>
             <hr className="mt-5" />
 
             <h3 className="font-bold text-xl mt-4">Vehicle Info</h3>
@@ -43,8 +77,9 @@ function CaptainSignup() {
               <div>
                   <select className="bg-gray-300 w-full border rounded-md py-4 px-3 text-lg font-medium" onChange={(e)=>setFormData({...formData,vehicleType:e.target.value})} id="">
                     <option value="">Select Type</option>
-                    <option value="two_vehicle">2 Wheeler</option>
-                    <option value="four_vehicle">4 Wheeler</option>
+                    <option value="bike">Bike</option>
+                    <option value="car">Car</option>
+                    <option value="auto">Auto</option>
                   </select>
               </div>
               <div>

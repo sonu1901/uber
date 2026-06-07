@@ -40,6 +40,6 @@ export const captainRegisterSchema = z.object({
 
     vehicleValidity: z
       .string()
-      .datetime("Invalid vehicle validity date")
+      .date("Invalid vehicle validity date")
   }).strict()
 });

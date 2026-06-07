@@ -1,7 +1,13 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../context/UseAuth.jsx";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { backendUrl } from "../main";
 
 function UserSignup() {
+    const {setAuth} = useAuth();
+    const navigate = useNavigate();
     const [formData,setFormData] = useState({
         firstName:'',
         lastName:'',
@@ -9,8 +15,29 @@ function UserSignup() {
         password:''
     });
 
-    const handleSubmit = (e)=>{
-        e.preventDefault();
+    const handleSubmit = async(e)=>{
+      e.preventDefault();
+      if(!formData.firstName || !formData.lastName || !formData.email || !formData.password){
+        toast.error('All fields are required.');
+        return;
+      }
+      try {
+        const {data} = await axios.post(`${backendUrl}api/auth/user-register`,{name:`${formData.firstName} ${formData.lastName}`,email:formData.email,password:formData.password,role:'user'});
+        if(data.success){
+          toast.success(data.message);
+          setAuth(data.user);
+          localStorage.setItem('uber_auth',JSON.stringify(data.user));
+          localStorage.setItem('access_token',data.accessToken);
+          localStorage.setItem('refresh_token',data.refreshToken);
+          navigate('/user-home');
+
+        }else{
+          toast.error(data.message);
+        }
+      } catch (error) {
+        console.log('Error : ',error.response.data);
+        toast.error(error.response.data.message);
+      }
     }
 
   return (
@@ -27,7 +54,7 @@ function UserSignup() {
               </div>
               <div>
                   <h3 className="font-bold text-2xl">Last Name</h3>
-                  <input type="text" value={formData.lastName} onChange={(e)=>setFormData({...formData,lasstName:e.target.value})} className="px-3 py-4 border rounded-xl bg-gray-300 w-full" />
+                  <input type="text" value={formData.lastName} onChange={(e)=>setFormData({...formData,lastName:e.target.value})} className="px-3 py-4 border rounded-xl bg-gray-300 w-full" />
               </div>
             </div>
             <h3 className="font-bold text-2xl">Email Id</h3>

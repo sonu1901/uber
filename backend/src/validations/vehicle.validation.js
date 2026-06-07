@@ -34,7 +34,7 @@ export const vehicleSchema = z.object({
 
     vehicleValidity: z
       .string()
-      .datetime()
+      .date()
       .optional()
   }).strict()
 });

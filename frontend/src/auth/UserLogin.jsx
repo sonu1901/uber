@@ -1,15 +1,37 @@
-import { useState } from "react";
-import { Link } from "react-router-dom"
+import { useEffect, useState, useRef } from "react";
+import toast from "react-hot-toast";
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../context/UseAuth";
 
-function UserLogin() {
+function UserLogin({handleLogin}) {
+    const {auth} = useAuth();
     const [formData,setFormData] = useState({
         email:'',
         password:''
     });
+    const navigate = useNavigate();
+    const navigationRef = useRef(false);
 
     const handleSubmit = (e)=>{
         e.preventDefault();
+        if(!formData.email || !formData.password){
+          toast.error('Email and password required.');
+          return;
+        }
+        handleLogin(formData.email,formData.password,'user');
     }
+
+    useEffect(()=>{
+        if(auth?.role && !navigationRef.current){
+            navigationRef.current = true;
+            if(auth.role === 'user'){
+                navigate('/user-home');
+            }else if(auth.role === 'captain'){
+                navigate('/captain-home');
+            }
+        }
+    },[auth?.role, navigate]);
+
   return (
     <div className="p-10 flex flex-col justify-between shadow-md rounde-xl">
       <img className='w-16 mb-30' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYQy-OIkA6In0fTvVwZADPmFFibjmszu2A0g&s" alt="" />

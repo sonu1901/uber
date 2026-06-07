@@ -1,15 +1,14 @@
 import { useAuth } from '../context/UseAuth.jsx'
-import { Navigation } from 'react-router-dom';
+import { Navigate } from "react-router-dom";
 
 function ProtectedUser({children,allowedRole}) {
   const {auth} = useAuth();
-
-  if(!auth){
-    return <Navigation to="/login" replace />
+  if(auth.length===0){
+    return <Navigate to="/login" replace />
   }
 
-  if(!allowedRole && auth.role !== allowedRole){   
-    return <Navigation to="/login" replace />
+  if(!allowedRole && auth.role !== allowedRole){  
+    return <Navigate to="/login" replace />
   }
 
   return children;

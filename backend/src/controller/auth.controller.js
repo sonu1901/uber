@@ -2,12 +2,13 @@ import { AsyncHandler } from "../middleware/asyncHandler.js";
 import bcrypt from 'bcryptjs';
 import { userModel } from "../model/user.model.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/generateToken.js";
+import { vehicleModel } from "../model/vehicle.model.js";
 
 export const userRegister = AsyncHandler(async(req,res)=>{
     const data = req.validated.body;
     const isExist = await userModel.findOne({email:data.email,role:'user'});
     if(isExist){
-         return res.status(409).json({
+         return res.status(409).json({ 
             message:"Email Id already exist.",
             success:false
         });
@@ -26,7 +27,12 @@ export const userRegister = AsyncHandler(async(req,res)=>{
         message:"Registered successfully.",
         success:true,
         accessToken,
-        refreshToken
+        refreshToken,
+        user:{
+          name:saveUser.name,
+          email:saveUser.email,
+          role:saveUser.role
+        }
     });
 
 });
@@ -82,7 +88,12 @@ export const captainRegister = AsyncHandler(
       success: true,
       message: "Captain registered successfully",
       accessToken,
-      refreshToken
+      refreshToken,
+      user:{
+        name:captain.name,
+        email:captain.email,
+        role:captain.role
+      }
     });
   }
 );
@@ -104,7 +115,7 @@ export const login = AsyncHandler(async(req,res)=>{
   const isMatch = await bcrypt.compare(data.password,isExist.password);
 
   if(!isMatch){
-    return res.status(404).json({
+    return res.status(400).json({
       message:"Password was as Incorrect.",
       success:false,
     });
@@ -117,7 +128,13 @@ export const login = AsyncHandler(async(req,res)=>{
     message:'Logged In successfully.',
     success:true,
     accessToken,
-    refreshToken
+    refreshToken,
+    user:{
+      id:isExist._id,
+      name:isExist.name,
+      email:isExist.email,
+      role:isExist.role
+    }
   });
 
 });
